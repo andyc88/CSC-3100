@@ -34,3 +34,5 @@ function MyApp() {
       </div>
     );
 }
+
+export default MyApp;
