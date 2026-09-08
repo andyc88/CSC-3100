@@ -73,3 +73,14 @@ app.get("/users/:id", (req, res) => {
   }
 });
 
+//POST endpoint + helper
+const addUser = (user) => {
+  users["users_list"].push(user);
+  return user 
+}
+
+app.post("/users", (req, res) =>{
+  const usersToAdd = req.body
+  addUser(usersToAdd);
+  res.send();
+})
