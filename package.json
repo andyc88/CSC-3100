@@ -15,7 +15,9 @@
     "start": "npm run start --workspace=react-frontend"
   },
   "workspaces": [
-  "packages/*"
-   ] 
+    "packages/*"
+  ],
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
 }
-
