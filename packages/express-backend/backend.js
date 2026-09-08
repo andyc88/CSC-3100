@@ -10,7 +10,7 @@ app.get("/", (req, res) => {
 })
 
 app.get("/users", (req, res) => {
-    res.render(users);
+    res.send(users);
 })
 
 app.listen(port, () => {
