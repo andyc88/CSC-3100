@@ -84,3 +84,16 @@ app.post("/users", (req, res) =>{
   addUser(usersToAdd);
   res.send();
 })
+
+//Delete endpoint
+const delUser = (id) =>{
+  users["users_list"] = users["users_list"].filter((user) => {
+    return user.id !== id;
+  });
+}
+
+app.delete("/users/:id", (req, res) =>{
+  const userToDel = req.params.id
+  delUser(userToDel);
+  res.send();
+})
