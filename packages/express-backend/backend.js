@@ -65,8 +65,14 @@ app.get("/users/:id", (req, res) => {
   }
 });
 
+//ID generator for users
+const IDgenerator = () => {
+  return Math.random().toString(36).substring(2,11);
+}
+
 //POST endpoint + helper
 const addUser = (user) => {
+  user.id = IDgenerator();
   users["users_list"].push(user);
   return user 
 }
