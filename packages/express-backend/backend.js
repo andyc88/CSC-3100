@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 
 const app = express();
 const port = 8000;
@@ -33,6 +34,8 @@ const users = {
   ],
 };
 
+//enable all CORS requests
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -62,16 +65,22 @@ app.get("/users/:id", (req, res) => {
   }
 });
 
+//ID generator for users
+const IDgenerator = () => {
+  return Math.random().toString(36).substring(2,11);
+}
+
 //POST endpoint + helper
 const addUser = (user) => {
+  user.id = IDgenerator();
   users["users_list"].push(user);
   return user 
 }
 
 app.post("/users", (req, res) =>{
   const usersToAdd = req.body
-  addUser(usersToAdd);
-  res.send();
+  const newuser = addUser(usersToAdd);
+  res.status(201).send(newuser);
 })
 
 //Delete endpoint
@@ -82,9 +91,15 @@ const delUser = (id) =>{
 }
 
 app.delete("/users/:id", (req, res) =>{
-  const userToDel = req.params.id
-  delUser(userToDel);
-  res.send();
+  const userToDel = req.params.id;
+  const found = findUserById(userToDel);
+
+  if (found == undefined){
+    res.status(404).send();
+  } else {
+    delUser(userToDel);
+    res.status(204).send();
+  }
 })
 
 //name + job matching
