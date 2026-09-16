@@ -17,6 +17,7 @@ function MyApp() {
 
   }
 
+  //frontend getting users from backend
   function fetchUsers(){
     const promise = fetch("http://localhost:8000/users");
     return promise;
@@ -31,6 +32,21 @@ function MyApp() {
         console.log(error);
       });
 }, []);
+
+  //frontend putting users onto backend
+  function postUsers(person) {
+    const promise = fetch("Http://localhost://8000/users", {
+
+      method: "POST",
+      headers: {
+         "Content-Type": "application/json",
+      },
+      body: JSON.strigify(person),
+    })
+
+      return promise;
+  }
+  
 
   return (
       <div className="container">
