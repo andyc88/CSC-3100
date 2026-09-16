@@ -79,8 +79,8 @@ const addUser = (user) => {
 
 app.post("/users", (req, res) =>{
   const usersToAdd = req.body
-  addUser(usersToAdd);
-  res.status(201).send();
+  const newuser = addUser(usersToAdd);
+  res.status(201).send(newuser);
 })
 
 //Delete endpoint
