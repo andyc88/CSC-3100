@@ -12,10 +12,10 @@ function MyApp() {
     setCharacters(updated);
   }
 
-  function updateList(person) {
-  setCharacters([...characters, person]);
+  // function updateList(person) {
+  // setCharacters([...characters, person]);
 
-  }
+  // }
 
   //frontend getting users from backend
   function fetchUsers(){
@@ -34,17 +34,24 @@ function MyApp() {
 }, []);
 
   //frontend putting users onto backend
-  function postUsers(person) {
-    const promise = fetch("Http://localhost://8000/users", {
+  function postUser(person) {
+    const promise = fetch("http://localhost:8000/users", {
 
       method: "POST",
       headers: {
          "Content-Type": "application/json",
       },
-      body: JSON.strigify(person),
+      body: JSON.stringify(person),
     })
-
       return promise;
+  }
+
+  function updateList(person) {
+    postUser(person)
+      .then(() => setCharacters([...characters, person]))
+      .catch((error) => {
+        console.log(error)
+      });
   }
   
 

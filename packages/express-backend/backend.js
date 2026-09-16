@@ -74,7 +74,7 @@ const addUser = (user) => {
 app.post("/users", (req, res) =>{
   const usersToAdd = req.body
   addUser(usersToAdd);
-  res.send();
+  res.status(201).send();
 })
 
 //Delete endpoint
@@ -85,9 +85,15 @@ const delUser = (id) =>{
 }
 
 app.delete("/users/:id", (req, res) =>{
-  const userToDel = req.params.id
-  delUser(userToDel);
-  res.send();
+  const userToDel = req.params.id;
+  const found = findUserById(userToDel);
+
+  if (found == undefined){
+    res.status(404).send();
+  } else {
+    delUser(userToDel);
+    res.status(204).send();
+  }
 })
 
 //name + job matching
