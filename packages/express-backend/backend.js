@@ -1,38 +1,20 @@
 import express from "express";
 import cors from "cors";
+import userServices from "./services/user-services.js"
+import dotenv from "dotenv";
+import mongoose from "mongoose";
 
+dotenv.config();
+
+const { MONGO_CONNECTION_STRING } = process.env;
+
+mongoose.set("debug", true);
+mongoose
+  .connect(MONGO_CONNECTION_STRING + "users")
+  .catch((error) => console.log(error));
+  
 const app = express();
 const port = 8000;
-
-const users = {
-  users_list: [
-    {
-      id: "xyz789",
-      name: "Charlie",
-      job: "Janitor",
-    },
-    {
-      id: "abc123",
-      name: "Mac",
-      job: "Bouncer",
-    },
-    {
-      id: "ppp222",
-      name: "Mac",
-      job: "Professor",
-    },
-    {
-      id: "yat999",
-      name: "Dee",
-      job: "Aspring actress",
-    },
-    {
-      id: "zap555",
-      name: "Dennis",
-      job: "Bartender",
-    },
-  ],
-};
 
 //enable all CORS requests
 app.use(cors());
@@ -46,82 +28,57 @@ app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 })
 
-//find UserByName helper -> used in get/users endpoint
-const findUserByName = (name) => {
-  return users["users_list"].filter((user) => user["name"] === name);
-};
-
-//find userByID helper function + endpoint
-const findUserById = (id) =>
-  users["users_list"].find((user) => user["id"] === id);
-
 app.get("/users/:id", (req, res) => {
-  const id = req.params["id"]; //or req.params.id
-  let result = findUserById(id);
-  if (result === undefined) {
+  const id = req.params["id"]; 
+  userServices.findUserById(id)
+  .then((result) => {
+    if (result === null) {
     res.status(404).send("Resource not found.");
   } else {
     res.send(result);
   }
+  })
+  .catch((error) => {
+    res.status(500).send("Server error.")
+  });
 });
-
-//ID generator for users
-const IDgenerator = () => {
-  return Math.random().toString(36).substring(2,11);
-}
-
-//POST endpoint + helper
-const addUser = (user) => {
-  user.id = IDgenerator();
-  users["users_list"].push(user);
-  return user 
-}
 
 app.post("/users", (req, res) =>{
   const usersToAdd = req.body
-  const newuser = addUser(usersToAdd);
-  res.status(201).send(newuser);
+  userServices.addUser(usersToAdd)
+  .then((newuser) => {
+    res.status(201).send(newuser);
+  })
+  .catch((error) => {
+    res.status(500).send("Server error.")
+  })
 })
 
-//Delete endpoint
-const delUser = (id) =>{
-  users["users_list"] = users["users_list"].filter((user) => {
-    return user.id !== id;
-  });
-}
 
 app.delete("/users/:id", (req, res) =>{
   const userToDel = req.params.id;
-  const found = findUserById(userToDel);
-
-  if (found == undefined){
-    res.status(404).send();
-  } else {
-    delUser(userToDel);
-    res.status(204).send();
-  }
+  userServices.removeUser(userToDel)
+    .then((result) => {
+      if (result === null) {
+        res.status(404).send();
+      } else {
+        res.status(204).send();
+      }
+    })
+    .catch((error) => {
+      res.status(500).send("Server error.")
+    })
 })
 
-//name + job matching
-const findUserByNameJob = (name, job) => {
-  return users.users_list.filter((user) => {
-    return user.name === name && user.job === job;
-  })
-}
 
 app.get("/users", (req, res) => {
   const name = req.query.name;
-  const job = req.query.job
-  if (name !== undefined && job !== undefined){
-    let result = findUserByNameJob(name, job);
-    result = { users_list: result };
-    res.send(result);
-  } else if (name !== undefined) {
-    let result = findUserByName(name);
-    result = {users_list: result };
-    res.send(result);
-  } else {
-    res.send(users);
-  }
-  
-}) 
+  const job = req.query.job;
+  userServices.getUsers(name, job)
+    .then((result) => {
+      res.send({users_list: result});
+    })
+    .catch((error) => {
+      res.status(500).send();
+    });
+})
