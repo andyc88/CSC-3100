@@ -28,11 +28,6 @@ function MyApp() {
     return promise;
   }
 
-  // function updateList(person) {
-  // setCharacters([...characters, person]);
-
-  // }
-
   //frontend getting users from backend
   function fetchUsers(){
     const promise = fetch("http://localhost:8000/users");
