@@ -1,38 +1,9 @@
 import express from "express";
 import cors from "cors";
+import userServices from "./services/user-services.js"
 
 const app = express();
 const port = 8000;
-
-const users = {
-  users_list: [
-    {
-      id: "xyz789",
-      name: "Charlie",
-      job: "Janitor",
-    },
-    {
-      id: "abc123",
-      name: "Mac",
-      job: "Bouncer",
-    },
-    {
-      id: "ppp222",
-      name: "Mac",
-      job: "Professor",
-    },
-    {
-      id: "yat999",
-      name: "Dee",
-      job: "Aspring actress",
-    },
-    {
-      id: "zap555",
-      name: "Dennis",
-      job: "Bartender",
-    },
-  ],
-};
 
 //enable all CORS requests
 app.use(cors());
@@ -46,15 +17,6 @@ app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 })
 
-//find UserByName helper -> used in get/users endpoint
-const findUserByName = (name) => {
-  return users["users_list"].filter((user) => user["name"] === name);
-};
-
-//find userByID helper function + endpoint
-const findUserById = (id) =>
-  users["users_list"].find((user) => user["id"] === id);
-
 app.get("/users/:id", (req, res) => {
   const id = req.params["id"]; //or req.params.id
   let result = findUserById(id);
@@ -65,30 +27,11 @@ app.get("/users/:id", (req, res) => {
   }
 });
 
-//ID generator for users
-const IDgenerator = () => {
-  return Math.random().toString(36).substring(2,11);
-}
-
-//POST endpoint + helper
-const addUser = (user) => {
-  user.id = IDgenerator();
-  users["users_list"].push(user);
-  return user 
-}
-
 app.post("/users", (req, res) =>{
   const usersToAdd = req.body
   const newuser = addUser(usersToAdd);
   res.status(201).send(newuser);
 })
-
-//Delete endpoint
-const delUser = (id) =>{
-  users["users_list"] = users["users_list"].filter((user) => {
-    return user.id !== id;
-  });
-}
 
 app.delete("/users/:id", (req, res) =>{
   const userToDel = req.params.id;
@@ -102,12 +45,6 @@ app.delete("/users/:id", (req, res) =>{
   }
 })
 
-//name + job matching
-const findUserByNameJob = (name, job) => {
-  return users.users_list.filter((user) => {
-    return user.name === name && user.job === job;
-  })
-}
 
 app.get("/users", (req, res) => {
   const name = req.query.name;
