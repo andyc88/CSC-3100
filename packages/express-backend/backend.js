@@ -34,36 +34,40 @@ app.get("/users/:id", (req, res) => {
 
 app.post("/users", (req, res) =>{
   const usersToAdd = req.body
-  const newuser = addUser(usersToAdd);
-  res.status(201).send(newuser);
+  userServices.addUser(usersToAdd)
+  .then((newuser) => {
+    res.status(201).send(newuser);
+  })
+  .catch((error) => {
+    res.status(500).send("Server error.")
+  })
 })
+
 
 app.delete("/users/:id", (req, res) =>{
   const userToDel = req.params.id;
-  const found = findUserById(userToDel);
-
-  if (found == undefined){
-    res.status(404).send();
-  } else {
-    delUser(userToDel);
-    res.status(204).send();
-  }
+  userServices.removeUser(userToDel)
+    .then((result) => {
+      if (result === null) {
+        res.status(404).send();
+      } else {
+        res.status(204).send();
+      }
+    })
+    .catch((error) => {
+      res.status(500).send("Server error.")
+    })
 })
 
 
 app.get("/users", (req, res) => {
   const name = req.query.name;
-  const job = req.query.job
-  if (name !== undefined && job !== undefined){
-    let result = findUserByNameJob(name, job);
-    result = { users_list: result };
-    res.send(result);
-  } else if (name !== undefined) {
-    let result = findUserByName(name);
-    result = {users_list: result };
-    res.send(result);
-  } else {
-    res.send(users);
-  }
-  
-}) 
+  const job = req.query.job;
+  userServices.getUsers(name, job)
+    .then((result) => {
+      res.send({users_list: result});
+    })
+    .catch((error) => {
+      res.status(500).send();
+    });
+})
