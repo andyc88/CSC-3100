@@ -18,13 +18,18 @@ app.listen(port, () => {
 })
 
 app.get("/users/:id", (req, res) => {
-  const id = req.params["id"]; //or req.params.id
-  let result = findUserById(id);
-  if (result === undefined) {
+  const id = req.params["id"]; 
+  userServices.findUserById(id)
+  .then((result) => {
+    if (result === null) {
     res.status(404).send("Resource not found.");
   } else {
     res.send(result);
   }
+  })
+  .catch((error) => {
+    res.status(500).send("Server error.")
+  });
 });
 
 app.post("/users", (req, res) =>{
